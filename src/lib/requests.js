@@ -11,7 +11,12 @@ export const addTodo= async(newTodo)=>{
     return res.data
 }
 
-export const deleteTodo=async({id})=>{
+export const deleteTodo=async(id)=>{
     const res = await axiosInstance.delete(`/todos/${id}`)
+    return res.data
+}
+
+export const updateTodo= async ({id, updatedTodo})=>{
+    const res= await axiosInstance.put(`/todos/${id}`, updatedTodo)
     return res.data
 }

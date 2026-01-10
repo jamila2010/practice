@@ -2,11 +2,27 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { addTodo } from "../lib/requests";
 
-function TodoForm({ mutation }) {
-  const { register, watch, formState, reset, handleSubmit } = useForm();
+function TodoForm({ mutation, updateMutation, updateData, setUpdateData }) {
+  const { register, watch, formState, reset, handleSubmit, setValue } =
+    useForm();
   const { errors, isSubmitting } = formState;
-  const submit = (todos) => {
-    mutation.mutate({ ...todos, userId: 1 });
+
+  useEffect(() => {
+    if (updateData) {
+      setValue("title", updateData.title);
+    }
+  }, [updateData]);
+
+  const submit = async (todo) => {
+    if (updateData) {
+      updateMutation.mutate({
+        id: updateData.id,
+        updatedTodo: todo,
+      });
+    } else {
+      mutation.mutate({ ...todo, userId: 1 });
+    }
+    setUpdateData(null);
     reset();
   };
   return (
@@ -26,9 +42,23 @@ function TodoForm({ mutation }) {
         {...register("title", { required: "Todo is required!" })}
       />
       <p className="text-red-700"> {errors.title?.message}</p>
-      <button className="border px-3 py-1 cursor-pointer rounded bg-blue-200 text-white w-40 mx-auto  ">
-        Add
+     <div className="flex items-center mx-auto ml-3 gap-3 w-90 ">
+       {updateData && (
+        <button
+          type="button"
+          onClick={()=>{
+            setUpdateData(null)
+            reset()
+          }}
+          className="w-full border px-3 py-1 cursor-pointer rounded bg-blue-200 text-white "
+        >
+         Cancel
+        </button>
+      )}
+      <button className="border px-3 py-1 cursor-pointer rounded bg-blue-200 text-white w-full  ">
+        {isSubmitting ? "Loading..." : updateData ? "Edit" : "Add"}
       </button>
+     </div>
     </form>
   );
 }
