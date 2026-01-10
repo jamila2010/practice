@@ -17,7 +17,7 @@ function TodoForm({ mutation, updateMutation, updateData, setUpdateData }) {
     if (updateData) {
       updateMutation.mutate({
         id: updateData.id,
-        updatedTodo: todo,
+        updatedTodo: updateData.title,
       });
     } else {
       mutation.mutate({ ...todo, userId: 1 });
